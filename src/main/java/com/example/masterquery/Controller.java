@@ -5,15 +5,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.scene.control.Dialog;
 
 public class Controller implements Initializable {
     @FXML
@@ -25,7 +24,7 @@ public class Controller implements Initializable {
     @FXML
     public static ScrollPane sp = new ScrollPane();
     @FXML
-    public Button button = new Button("Resize");
+    public Button button = new Button();
     @FXML
     public TreeView<String> treeView = new TreeView<String>();
 
@@ -40,6 +39,15 @@ public class Controller implements Initializable {
     public void resize(){
         sp.prefHeightProperty().bind(sp.heightProperty());
         System.out.println("reached");
+    }
+
+    @FXML
+    public void addNode(){
+        Dialog<TreeItem<String>> treeItemWizard = new TreeViewItemWizard();
+        Optional<TreeItem<String>> result = treeItemWizard.showAndWait();
+        if(result.isPresent()) {
+            System.out.println(result.get());
+        }
     }
 
 
