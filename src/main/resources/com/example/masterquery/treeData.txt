@@ -1,3 +1,0 @@
-"a" Root Node
-"b" a
-"c" b

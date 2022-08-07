@@ -1,11 +1,13 @@
 package com.example.masterquery;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -16,8 +18,6 @@ import javafx.scene.control.Dialog;
 
 public class Controller implements Initializable {
     @FXML
-    private Label welcomeText;
-    @FXML
     public static AnchorPane anchorPaneOne = new AnchorPane();
     @FXML
     public static VBox box = new VBox();
@@ -26,15 +26,13 @@ public class Controller implements Initializable {
     @FXML
     public Button button = new Button();
     @FXML
+    public Button printButton = new Button();
+    @FXML
     public TreeView<String> treeView = new TreeView<String>();
 
     public static ArrayList<TreeItem<String>> treeItems = new ArrayList<TreeItem<String>>();
+    public static ArrayList<String> textAreaFileNames = new ArrayList<String>();
 
-
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
     @FXML
     public void resize(){
         sp.prefHeightProperty().bind(sp.heightProperty());
@@ -96,5 +94,10 @@ public class Controller implements Initializable {
                 return t;
         }
         return null;
+    }
+
+    public void printData() {
+        System.out.println(treeItems);
+        System.out.println(textAreaFileNames);
     }
 }

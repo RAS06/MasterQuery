@@ -9,6 +9,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +23,7 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
 
     private TextField nodeName;
     private TextField parentName;
+    private Label errorMessage = new Label(null);
 
     public TreeViewItemWizard(TreeItem<String> initItem){
         super();
@@ -46,6 +48,7 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
 
             private boolean validateDialog(){
                 if(nodeName.getText().isEmpty() || parentName.getText().isEmpty() || Controller.getTreeItemByName(parentName.getText()) == null){
+                    errorMessage.setText("Either a field is blank or no such parent category exists.");
                     return false;
                 }
                 String s = nodeName.getText();
@@ -53,6 +56,14 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
                 treeItem = new TreeItem<String>(s);
                 Controller.getTreeItemByName(str).getChildren().add(treeItem);
                 Controller.treeItems.add(treeItem);
+                String pathway = "src/main/resources/com/example/masterquery/" + s + ".txt";
+                Path p = Paths.get(pathway);
+                try {
+                    Path f = Files.createFile(p);
+                    Controller.textAreaFileNames.add(pathway);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
                 try {
                     FileWriter fw = new FileWriter("src/main/resources/com/example/masterquery/treeData.txt", true);
@@ -76,9 +87,11 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
 
     public Pane createGridPane(){
         VBox content = new VBox(18);
+        content.setPrefWidth(600);
 
         Label nodeNameLabel = new Label("Category Name");
         Label parentNodeLabel = new Label("Subcategory of");
+        errorMessage.setStyle("-fx-text-fill: #8d0000");
         this.nodeName = new TextField();
         this.parentName = new TextField();
         GridPane grid = new GridPane();
@@ -86,6 +99,7 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
         grid.setVgap(5);
         grid.add(nodeNameLabel, 0, 0);
         grid.add(parentNodeLabel, 0, 1);
+        grid.add(errorMessage, 0, 4);
         grid.add(nodeName, 1, 0);
         GridPane.setHgrow(this.nodeName, Priority.ALWAYS);
         grid.add(parentName, 1, 1);
