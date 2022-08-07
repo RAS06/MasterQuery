@@ -77,6 +77,7 @@ public class Controller implements Initializable {
                 parentNode = line.substring(curr);
                 //Add the new TreeItem to the treeItems ArrayList using the nodeName retrieved from the .txt file.
                 treeItems.add(new TreeItem<>(nodeName));
+                textAreaFileNames.add("src/main/resources/com/example/masterquery/" + nodeName + ".txt");
                 //And add it to the children of its parent node, also retrieved from the .txt file
                 getTreeItemByName(parentNode).getChildren().add(treeItems.get(treeItems.size() - 1));
                 nodeName = "";
@@ -86,6 +87,9 @@ public class Controller implements Initializable {
         } catch(Exception e){
             e.printStackTrace();
         }
+
+    }
+    public void selectNode(){
 
     }
     public static TreeItem<String> getTreeItemByName(String name){
