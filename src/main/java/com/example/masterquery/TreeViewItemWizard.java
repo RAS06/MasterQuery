@@ -7,7 +7,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
@@ -17,12 +23,10 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
     private TextField nodeName;
     private TextField parentName;
 
-    public TreeViewItemWizard(){
+    public TreeViewItemWizard(TreeItem<String> initItem){
         super();
         this.setTitle("Add Node");
         buildUI();
-        setPropertyBindings();
-        setResultConverter();
     }
 
     private void buildUI() {
@@ -41,30 +45,34 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
             }
 
             private boolean validateDialog(){
-                if(nodeName.getText().isEmpty() || parentName.getText().isEmpty()){
+                if(nodeName.getText().isEmpty() || parentName.getText().isEmpty() || Controller.getTreeItemByName(parentName.getText()) == null){
                     return false;
                 }
+                String s = nodeName.getText();
+                String str = parentName.getText();
+                treeItem = new TreeItem<String>(s);
+                Controller.getTreeItemByName(str).getChildren().add(treeItem);
+                Controller.treeItems.add(treeItem);
+
+                try {
+                    FileWriter fw = new FileWriter("src/main/resources/com/example/masterquery/treeData.txt", true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+                    if(countLines("src/main/resources/com/example/masterquery/treeData.txt") == 0) {
+                        bw.write("\"" + s + "\" " + str);
+                    }
+                    else {
+                        bw.write("\n\"" + s + "\" " + str);
+                    }
+                    bw.close();
+                } catch(IOException ioe){
+                    ioe.printStackTrace();
+                }
+
                 return true;
             }
         });
     }
 
-    public void setPropertyBindings(){
-        //treeItem = new TreeItem<String>(nodeName.textProperty().toString());
-        System.out.println(nodeName.textProperty().getValue());
-    }
-
-    public void setResultConverter() {
-        Callback<ButtonType, TreeItem<String>> treeItemResultConverter =  new Callback<ButtonType, TreeItem<String>>() {
-            @Override
-            public TreeItem<String> call(ButtonType param) {
-                if(param == ButtonType.OK){
-                    return treeItem;
-                } else
-                return null;
-            }
-        };
-    }
 
     public Pane createGridPane(){
         VBox content = new VBox(18);
@@ -88,5 +96,21 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
         return content;
     }
 
+    public static long countLines(String fileName) {
+
+        Path path = Paths.get(fileName);
+
+        long lines = 0;
+        try {
+
+            lines = Files.lines(path).count();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return lines;
+
+    }
 
 }

@@ -17,13 +17,6 @@ public class Application extends javafx.application.Application {
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setTitle("MasterQuery");
         scene.getStylesheets().add(getClass().getResource("Query.css").toExternalForm());
-
-
-        //Controller.sp.prefHeightProperty().bind(Controller.sp.heightProperty());
-
-//        AnchorPane.setBottomAnchor(Controller.sp, 0.0);
-//        AnchorPane.setTopAnchor(Controller.sp, 0.0);
-
         
 
         stage.setScene(scene);

@@ -4,3 +4,7 @@ VBox{
 AnchorPane {
     -fx-background-color: #3b3b3b;
 }
+TreeView{
+    -fx-padding: 5px;
+    -fx-border-insets: 5px;
+}

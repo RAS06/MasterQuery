@@ -28,7 +28,7 @@ public class Controller implements Initializable {
     @FXML
     public TreeView<String> treeView = new TreeView<String>();
 
-    public ArrayList<TreeItem<String>> treeItems = new ArrayList<TreeItem<String>>();
+    public static ArrayList<TreeItem<String>> treeItems = new ArrayList<TreeItem<String>>();
 
 
     @FXML
@@ -43,11 +43,8 @@ public class Controller implements Initializable {
 
     @FXML
     public void addNode(){
-        Dialog<TreeItem<String>> treeItemWizard = new TreeViewItemWizard();
+        Dialog<TreeItem<String>> treeItemWizard = new TreeViewItemWizard(new TreeItem<String>(null));
         Optional<TreeItem<String>> result = treeItemWizard.showAndWait();
-        if(result.isPresent()) {
-            System.out.println(result.get());
-        }
     }
 
 
@@ -93,11 +90,11 @@ public class Controller implements Initializable {
         }
 
     }
-    public TreeItem<String> getTreeItemByName(String name){
+    public static TreeItem<String> getTreeItemByName(String name){
         for(TreeItem<String> t: treeItems){
             if(t.getValue().equals(name))
                 return t;
         }
-        return new TreeItem<>();
+        return null;
     }
 }
