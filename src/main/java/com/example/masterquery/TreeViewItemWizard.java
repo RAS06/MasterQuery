@@ -52,11 +52,17 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
                     return false;
                 }
                 String s = nodeName.getText();
+                String ss = "";
+                for(int i = 0; i < s.length(); i++){
+                    if(!s.substring(i, i + 1).equals(" ")){
+                        ss += s.substring(i, i+ 1);
+                    }
+                }
                 String str = parentName.getText();
                 treeItem = new TreeItem<String>(s);
                 Controller.getTreeItemByName(str).getChildren().add(treeItem);
                 Controller.treeItems.add(treeItem);
-                String pathway = "src/main/resources/com/example/masterquery/" + s + ".txt";
+                String pathway = "src/main/resources/com/example/masterquery/" + ss + ".txt";
                 Path p = Paths.get(pathway);
                 try {
                     Path f = Files.createFile(p);

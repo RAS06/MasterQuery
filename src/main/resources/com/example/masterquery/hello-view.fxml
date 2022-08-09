@@ -5,6 +5,8 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Polygon?>
 
 <AnchorPane fx:id="anchorPaneOne" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.masterquery.Controller">
    <children>
@@ -17,8 +19,14 @@
             </AnchorPane>
         </content>
       </ScrollPane>
-      <Button fx:id="button" layoutX="40.0" layoutY="571.0" mnemonicParsing="false" onAction="#addNode" text="+ Add New Category" />
-      <TextArea layoutX="228.0" layoutY="14.0" prefHeight="546.0" prefWidth="560.0" />
-      <Button fx:id="printButton" layoutX="201.0" layoutY="571.0" mnemonicParsing="false" onAction="#printData" text="Print Data" />
+      <TextArea fx:id="textArea" layoutX="228.0" layoutY="14.0" prefHeight="546.0" prefWidth="560.0" />
+      <Polygon fill="TRANSPARENT" layoutX="366.0" layoutY="525.0" points="-352.0, 82.0, 422.0, 82.0, 422.0, 36.0, -352.0, 36.0" stroke="BLACK" strokeType="INSIDE" />
+      <Line endX="-157.0" endY="142.0" layoutX="367.0" layoutY="466.0" startX="-157.0" startY="95.0" />
+      <Line endX="36.0" endY="141.0" layoutX="396.0" layoutY="466.0" startX="36.0" startY="95.0" />
+      <Line endX="48.0" endY="141.0" layoutX="576.0" layoutY="465.0" startX="48.0" startY="95.0" />
+      <Button fx:id="button" layoutX="50.0" layoutY="570.0" mnemonicParsing="false" onAction="#addNode" text="+ Add New Category" />
+      <Button fx:id="saveButton" layoutX="290.0" layoutY="570.0" mnemonicParsing="false" onAction="#save" text="    Save   " />
+      <Button fx:id="saveAllButton" onAction="#saveAll" layoutX="506.0" layoutY="570.0" mnemonicParsing="false" text="Save All" />
+      <Button fx:id="deleteButton" onAction="#deleteNode" layoutX="668.0" layoutY="570.0" mnemonicParsing="false" text="Delete Node" />
    </children>
 </AnchorPane>

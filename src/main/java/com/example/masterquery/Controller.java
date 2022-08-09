@@ -6,11 +6,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -26,9 +27,15 @@ public class Controller implements Initializable {
     @FXML
     public Button button = new Button();
     @FXML
-    public Button printButton = new Button();
+    public Button saveButton = new Button();
+    @FXML
+    public Button saveAllButton = new Button();
+    @FXML
+    public Button deleteButton = new Button();
     @FXML
     public TreeView<String> treeView = new TreeView<String>();
+    @FXML
+    public TextArea textArea = new TextArea();
 
     public static ArrayList<TreeItem<String>> treeItems = new ArrayList<TreeItem<String>>();
     public static ArrayList<String> textAreaFileNames = new ArrayList<String>();
@@ -90,7 +97,34 @@ public class Controller implements Initializable {
 
     }
     public void selectNode(){
-
+        textArea.setText("");
+        TreeItem<String> selectedItem = treeView.getSelectionModel().getSelectedItem();
+        String s;
+        if(selectedItem != null){
+            s = selectedItem.getValue();
+            String ss = "";
+            for(int i = 0; i < s.length(); i++){
+                if(!s.substring(i, i + 1).equals(" ")){
+                  ss += s.substring(i, i+ 1);
+                }
+            }
+            try {
+                FileInputStream fis = new FileInputStream("src/main/resources/com/example/masterquery/" + ss + ".txt");
+                BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                String line;
+                boolean started = false;
+                while(((line = br.readLine()) != null)) {
+                    if(!started) {
+                        textArea.appendText(line);
+                        started = true;
+                    } else{
+                        textArea.appendText("\n" + line);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
     public static TreeItem<String> getTreeItemByName(String name){
         for(TreeItem<String> t: treeItems){
@@ -100,8 +134,56 @@ public class Controller implements Initializable {
         return null;
     }
 
-    public void printData() {
-        System.out.println(treeItems);
-        System.out.println(textAreaFileNames);
+    public void save() {
+        TreeItem<String> selectedItem = treeView.getSelectionModel().getSelectedItem();
+        overwrite(selectedItem);
+    }
+
+    public void saveAll(){
+        //for(TreeItem<String> item: treeItems){
+            //overwrite(item);
+        //}
+    }
+    public void overwrite(TreeItem<String> selectedItem){
+        if(selectedItem != null) {
+            try {
+                String s = selectedItem.getValue();
+                String ss = "";
+                for(int i = 0; i < s.length(); i++){
+                    if(!s.substring(i, i + 1).equals(" ")){
+                        ss += s.substring(i, i + 1);
+                    }
+                }
+                if(ss != null) {
+                    FileWriter fw = new FileWriter("src/main/resources/com/example/masterquery/" + ss + ".txt", false);
+                    BufferedWriter bw = new BufferedWriter(fw);
+                    bw.write(textArea.getText());
+                    bw.close();
+                }
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    public void deleteNode(){
+        TreeItem<String> selectedItem = treeView.getSelectionModel().getSelectedItem();
+        if(selectedItem != null && !selectedItem.getValue().equals("Root Node")) {
+            String s = selectedItem.getValue();
+            String ss = "";
+            for(int i = 0; i < s.length(); i++){
+                if(!s.substring(i, i + 1).equals(" ")){
+                    ss += s.substring(i, i+ 1);
+                }
+            }
+            if(ss != null) {
+                selectedItem.getParent().getChildren().remove(selectedItem);
+                Path p = Paths.get("src/main/resources/com/example/masterquery/" + ss + ".txt");
+                try {
+                    Files.deleteIfExists(p);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
