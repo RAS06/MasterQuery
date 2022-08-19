@@ -66,41 +66,49 @@ public class Controller implements Initializable {
     private void clearClutter() {
         File f = new File("src/main/resources/com/example/NodeData");
         ArrayList<String> arr = new ArrayList<String>(List.of(f.list()));
-        System.out.println(arr);
-        System.out.println(textAreaFileNames);
-        for(String s: textAreaFileNames){
+        ArrayList<String> textAreaArr = new ArrayList<String>();
+        //System.out.println(arr);
+        //System.out.println(textAreaFileNames);
+        for(String s: textAreaFileNames) {
             String ss = s.substring(s.indexOf("NodeData/") + 9);
             String sss = "";
-            for(int i = 0; i < ss.length(); i++){
-                if(!ss.substring(i, i + 1).equals(" "))
+            for (int i = 0; i < ss.length(); i++) {
+                if (!ss.substring(i, i + 1).equals(" "))
                     sss += ss.substring(i, i + 1);
             }
             //String sss is basically just the NodeName
-            System.out.println(sss);
+            textAreaArr.add(sss);
+        }
 
-            for(String str: arr){
-                if(!fileExistsInArr(sss, arr)){
-                    try {
-                        Path p = Paths.get("src/main/resources/com/example/NodeData/" + sss);
-                        System.out.println(p + " not in textAreaFileNames");
-                        //Files.deleteIfExists(p);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        ArrayList<String> targetDeletionFiles = detectUnwantedFiles(arr, textAreaArr);
+
+        for(String s: targetDeletionFiles){
+            try {
+                Path p = Paths.get("src/main/resources/com/example/NodeData/" + s);
+                Files.deleteIfExists(p);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private ArrayList<String> detectUnwantedFiles(ArrayList<String> arr, ArrayList<String> arr2) {
+        ArrayList<String> returnable = new ArrayList<String>();
+        for (int i = 0; i < arr.size(); i++) {
+            String curr = arr.get(i);
+            boolean detected = false;
+            for (int j = 0; j < arr2.size(); j++) {
+                if(arr.get(i).equals(arr2.get(j))){
+                    detected = true;
                 }
             }
-
+            if(!detected)
+                returnable.add(curr);
         }
+        return returnable;
     }
 
-    public boolean fileExistsInArr(String s, ArrayList<String> arr){
-        for(String str: arr){
-            if(textAreaFileNames.contains(s)){
-                return true;
-            }
-        }
-        return false;
-    }
 
     public void constructTreeView(String file){
         textAreaFileNames.add("src/main/resources/com/example/NodeData/RootNode.txt");
