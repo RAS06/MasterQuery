@@ -62,7 +62,7 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
                 treeItem = new TreeItem<String>(s);
                 Controller.getTreeItemByName(str).getChildren().add(treeItem);
                 Controller.treeItems.add(treeItem);
-                String pathway = "src/main/resources/com/example/masterquery/" + ss + ".txt";
+                String pathway = "src/main/resources/com/example/NodeData/" + ss + ".txt";
                 Path p = Paths.get(pathway);
                 try {
                     Path f = Files.createFile(p);
@@ -72,9 +72,9 @@ public class TreeViewItemWizard extends Dialog<TreeItem<String>> {
                 }
 
                 try {
-                    FileWriter fw = new FileWriter("src/main/resources/com/example/masterquery/treeData.txt", true);
+                    FileWriter fw = new FileWriter("src/main/resources/com/example/NodeData/treeData.txt", true);
                     BufferedWriter bw = new BufferedWriter(fw);
-                    if(countLines("src/main/resources/com/example/masterquery/treeData.txt") == 0) {
+                    if(countLines("src/main/resources/com/example/NodeData/treeData.txt") == 0) {
                         bw.write("\"" + s + "\" " + str);
                     }
                     else {

@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.scene.control.Dialog;
@@ -57,11 +58,54 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         TreeItem<String> root = new TreeItem<>("Root Node");
         treeItems.add(root);
-        constructTreeView("src/main/resources/com/example/masterquery/treeData.txt");
+        constructTreeView("src/main/resources/com/example/NodeData/treeData.txt");
+        clearClutter();
         treeView.setRoot(root);
     }
 
+    private void clearClutter() {
+        File f = new File("src/main/resources/com/example/NodeData");
+        ArrayList<String> arr = new ArrayList<String>(List.of(f.list()));
+        System.out.println(arr);
+        System.out.println(textAreaFileNames);
+        for(String s: textAreaFileNames){
+            String ss = s.substring(s.indexOf("NodeData/") + 9);
+            String sss = "";
+            for(int i = 0; i < ss.length(); i++){
+                if(!ss.substring(i, i + 1).equals(" "))
+                    sss += ss.substring(i, i + 1);
+            }
+            //String sss is basically just the NodeName
+            System.out.println(sss);
+
+            for(String str: arr){
+                if(!fileExistsInArr(sss, arr)){
+                    try {
+                        Path p = Paths.get("src/main/resources/com/example/NodeData/" + sss);
+                        System.out.println(p + " not in textAreaFileNames");
+                        //Files.deleteIfExists(p);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        }
+    }
+
+    public boolean fileExistsInArr(String s, ArrayList<String> arr){
+        for(String str: arr){
+            if(textAreaFileNames.contains(s)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void constructTreeView(String file){
+        textAreaFileNames.add("src/main/resources/com/example/NodeData/RootNode.txt");
+        textAreaFileNames.add("src/main/resources/com/example/NodeData/tempTreeData.txt");
+        textAreaFileNames.add("src/main/resources/com/example/NodeData/treeData.txt");
         try {
             FileInputStream fis = new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
@@ -84,7 +128,7 @@ public class Controller implements Initializable {
                 parentNode = line.substring(curr);
                 //Add the new TreeItem to the treeItems ArrayList using the nodeName retrieved from the .txt file.
                 treeItems.add(new TreeItem<>(nodeName));
-                textAreaFileNames.add("src/main/resources/com/example/masterquery/" + nodeName + ".txt");
+                textAreaFileNames.add("src/main/resources/com/example/NodeData/" + nodeName + ".txt");
                 //And add it to the children of its parent node, also retrieved from the .txt file
                 getTreeItemByName(parentNode).getChildren().add(treeItems.get(treeItems.size() - 1));
                 nodeName = "";
@@ -109,7 +153,7 @@ public class Controller implements Initializable {
                 }
             }
             try {
-                FileInputStream fis = new FileInputStream("src/main/resources/com/example/masterquery/" + ss + ".txt");
+                FileInputStream fis = new FileInputStream("src/main/resources/com/example/NodeData/" + ss + ".txt");
                 BufferedReader br = new BufferedReader(new InputStreamReader(fis));
                 String line;
                 boolean started = false;
@@ -155,7 +199,7 @@ public class Controller implements Initializable {
                     }
                 }
                 if(ss != null) {
-                    FileWriter fw = new FileWriter("src/main/resources/com/example/masterquery/" + ss + ".txt", false);
+                    FileWriter fw = new FileWriter("src/main/resources/com/example/NodeData/" + ss + ".txt", false);
                     BufferedWriter bw = new BufferedWriter(fw);
                     bw.write(textArea.getText());
                     bw.close();
@@ -176,13 +220,73 @@ public class Controller implements Initializable {
                 }
             }
             if(ss != null) {
-                selectedItem.getParent().getChildren().remove(selectedItem);
-                Path p = Paths.get("src/main/resources/com/example/masterquery/" + ss + ".txt");
                 try {
-                    Files.deleteIfExists(p);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    //Clear the Temp File before writing all lines except the one for the selected item onto it.
+                    FileWriter clearTempFile = new FileWriter("src/main/resources/com/example/NodeData/tempTreeData.txt", false);
+                    BufferedWriter bufferedClearTempFile = new BufferedWriter(clearTempFile);
+                    bufferedClearTempFile.write("");
+                    clearTempFile.close();
+
+
+                    //Writes to Temp.
+                    FileWriter fw = new FileWriter("src/main/resources/com/example/NodeData/tempTreeData.txt", true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    //Reads Data Storage Node.
+                    FileInputStream fis = new FileInputStream("src/main/resources/com/example/NodeData/treeData.txt");
+                    BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+
+
+                    String line;
+                    String nodeName = "\"";
+                    nodeName += s;
+                    nodeName += "\"";
+
+                    boolean started = false;
+
+                    while((line = br.readLine()) != null) {
+
+                        if(!started && line.indexOf(nodeName) == - 1) {
+                            bw.write(line);
+                            started = true;
+                        } else if(line.indexOf(nodeName) == - 1){
+                            bw.write("\n" + line);
+                        }
+                    }
+                    bw.close();
+                    br.close();
+
+                    //Clear the Original Data Storage Node so it can be rewritten from the Temp Tree Data File.
+                    FileWriter clearOriginal = new FileWriter("src/main/resources/com/example/NodeData/treeData.txt");
+                    BufferedWriter bufferedClearOriginal = new BufferedWriter(clearOriginal);
+                    bufferedClearOriginal.write("");
+                    bufferedClearOriginal.close();
+
+                    //Writes to Data Storage Node.
+                    FileWriter fwToOriginal = new FileWriter("src/main/resources/com/example/NodeData/TreeData.txt", true);
+                    BufferedWriter bwToOriginal = new BufferedWriter(fwToOriginal);
+                    //Reads Temp.
+                    FileInputStream fisFromTemp = new FileInputStream("src/main/resources/com/example/NodeData/tempTreeData.txt");
+                    BufferedReader brOfTemp = new BufferedReader(new InputStreamReader(fisFromTemp));
+
+                    String tempLine;
+                    boolean secondStart = false;
+
+                    while((tempLine = brOfTemp.readLine()) != null){
+                        if(!secondStart) {
+                            bwToOriginal.write(tempLine);
+                        } else{
+                            bwToOriginal.write("\n" + tempLine);
+                        }
+                    }
+                    brOfTemp.close();
+                    bwToOriginal.close();
+
+                } catch (IOException ioe){
+                    ioe.printStackTrace();
                 }
+
+                selectedItem.getParent().getChildren().remove(selectedItem);
             }
         }
     }
